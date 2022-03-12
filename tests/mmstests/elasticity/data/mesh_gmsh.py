@@ -5,6 +5,11 @@ import gmsh
 DOMAIN_X = DOMAIN_Y = 8.0e+3
 DX = 4.0e+3
 
+# Physical groups have a name, dimension, and physical tag. We will make a label for each physical group.
+# Entities have a dimension, bounding box, and physical tag
+# Nodes have a node tag, coordinates, and an entity. We need to lookup the entity to get the physical tag for a node.
+# Elements have an element tag, dimension, element type, list of node tags, and an entity. We need to lookup the entity to get the physical tag for a node.
+
 def generate_mesh(cell="tri"):
 
     gmsh.initialize()
@@ -27,9 +32,15 @@ def generate_mesh(cell="tri"):
 
     gmsh.model.geo.synchronize()
 
-    boundary = gmsh.model.addPhysicalGroup(1, [e0, e1, e2, e3])
+    # This adds "boundary" to the PhysicalNames section with the next available tag
+    boundaryV = gmsh.model.addPhysicalGroup(0, [v0, v1, v2, v3], 1)
+    gmsh.model.setPhysicalName(0, boundaryV, "boundary")
+
+    # This adds "boundary" to the PhysicalNames section with the next available tag
+    boundary = gmsh.model.addPhysicalGroup(1, [e0, e1, e2, e3], 1)
     gmsh.model.setPhysicalName(1, boundary, "boundary")
 
+    # This adds "material-id" to the PhysicalNames section with tag 24
     material = gmsh.model.addPhysicalGroup(2, [s0], 24)
     gmsh.model.setPhysicalName(2, material, "material-id")
 
@@ -38,6 +49,9 @@ def generate_mesh(cell="tri"):
 
     if cell == "quad":
         gmsh.option.setNumber("Mesh.RecombineAll", 1)
+
+    # Can set refinement criterion
+    # gmsh.model.mesh.setSize(0, maxSize)
 
     gmsh.model.mesh.generate(2)
     gmsh.write(f"{cell}_gmsh.msh")

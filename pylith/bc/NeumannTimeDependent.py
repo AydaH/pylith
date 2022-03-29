@@ -40,10 +40,39 @@ def validateDir(value):
 
 
 class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
-    """Python object for managing a time-dependent Neumann (natural) boundary condition.
-
-    FACTORY: boundary_condition
     """
+    Neumann time-dependent boundary condition.
+
+    This boundary condition applies a Neumann boundary condition for a single solution subfield on a boundary.
+    To apply Neumann boundary conditions for multiple solution subfields on a boundary, use multiple Neumann boundary conditions.
+
+    :::{seealso}
+    See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time depenence.
+    :::
+
+    Implements `BoundaryCondition`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            # Neumann (traction) boundary condition in 2D on -y boundary.
+            [pylithapp.problem.bc.bc_yneg]
+            label = boundary_yneg
+            field = displacement
+            scale_name = pressure
+
+            use_initial = False
+            use_time_history = True
+            db_auxiliary_field = spatialdata.spatialdb.UniformDB
+            db_auxiliary_field.label = Displacement Neumann BC +y boundary
+            db_auxiliary_field.values = [time_history_amplitude_tangential, time_history_amplitude_normal, time_history_start_time]
+            db_auxiliary_field.data = [2.0*MPa, -1.0*MPa, 0.0]
+
+            time_history = spatialdata.spatialdb.TimeHistory
+            time_history.label = Impulse time history
+            time_history.filename = impulse.timedb
+            """,
+    }
+
 
     import pythia.pyre.inventory
 
@@ -64,10 +93,10 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
     refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
-    refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
+    refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3D."
 
     refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
-    refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
+    refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3D."
 
     def __init__(self, name="neumanntimedependent"):
         """Constructor.

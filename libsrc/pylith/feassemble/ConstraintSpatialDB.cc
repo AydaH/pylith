@@ -96,11 +96,11 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Update auxiliary field values to current time.
+// Set auxiliary field values for current time.
 void
-pylith::feassemble::ConstraintSpatialDB::updateState(const double t) {
+pylith::feassemble::ConstraintSpatialDB::SetState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("SetState(t="<<t<<")");
 
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
@@ -115,7 +115,7 @@ pylith::feassemble::ConstraintSpatialDB::updateState(const double t) {
     } // if
 
     PYLITH_METHOD_END;
-} // updateState
+} // SetState
 
 
 // ---------------------------------------------------------------------------------------------------------------------

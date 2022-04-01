@@ -24,7 +24,7 @@
 namespace pylith {
     namespace faults {
         class FaultCohesive : public pylith::problems::Physics {
-            // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
+            // PUBLIC METHODS /////////////////////////////////////////////////////////////////////
 public:
 
             /// Default constructor.
@@ -90,6 +90,21 @@ public:
              * @param mesh[in] PETSc mesh.
              */
             void adjustTopology(pylith::topology::Mesh* const mesh);
+
+            /** Create integrator and set kernels.
+             *
+             * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
+             * @returns Integrator if applicable, otherwise NULL.
+             */
+            virtual
+            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                             const std::vector<pylith::materials::Material*>& materials) = 0;
+
+            // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////
+private:
+
+            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution); // Empty method
 
         }; // class FaultCohesive
 
